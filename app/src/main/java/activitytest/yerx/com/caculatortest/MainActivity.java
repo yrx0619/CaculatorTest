@@ -2,6 +2,7 @@ package activitytest.yerx.com.caculatortest;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,9 +10,12 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     Button[] m_buttonNum;
-    //Button m_buttonOp[4];
+    Button[] m_buttonOp;
     //Button m_buttonDot;
-    TextView m_reslutView;
+    TextView m_resultView;
+    int m_result;
+    int[] m_number_queue;
+    int[] m_op_queue;
 
     private void getBtnNumById(){
         m_buttonNum[0] = (Button)findViewById(R.id.button_num0);
@@ -24,12 +28,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
         m_buttonNum[7] = (Button)findViewById(R.id.button_num7);
         m_buttonNum[8] = (Button)findViewById(R.id.button_num8);
         m_buttonNum[9] = (Button)findViewById(R.id.button_num9);
+        m_buttonOp[0] = (Button) findViewById(R.id.button_op_plus);
+        m_buttonOp[1] = (Button) findViewById(R.id.button_op_subtraction);
+        m_buttonOp[2] = (Button) findViewById(R.id.button_op_multiplicative);
+        m_buttonOp[3] = (Button) findViewById(R.id.button_op_division);
+        m_buttonOp[4] = (Button) findViewById(R.id.button_op_equal);
+
     }
 
     private void setBtnNumClickListener(){
         int index = 0;
         for(;index < 10; index++)
             m_buttonNum[index].setOnClickListener(this);
+    }
+
+    private void setBtnOpClickListener() {
+        int index = 0;
+        for (; index < 5; index++)
+            m_buttonOp[index].setOnClickListener(this);
     }
 
     private Boolean isNotNumberButton(int id)
@@ -46,29 +62,116 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 return Boolean.FALSE;
         }
     }
+
+    private Boolean isPlusOperation(int op) {
+        if (1 == op)
+            return Boolean.TRUE;
+        else
+            return Boolean.FALSE;
+    }
+
+    private int getCountInOperationQueue() {
+        int i = 0;
+        int count = 0;
+        for (; i < 2; i++)
+            if (m_op_queue[i] != 0)
+                count++;
+        Log.d("count", Integer.toString(count));
+        return count;
+    }
+
+    private void addInOperationQueue(int id, int index) {
+        switch (id) {
+            case R.id.button_op_equal:
+                m_op_queue[index] = 5;
+                break;
+            case R.id.button_op_multiplicative:
+                m_op_queue[index] = 3;
+                break;
+            case R.id.button_op_plus:
+                m_op_queue[index] = 1;
+                break;
+            case R.id.button_op_subtraction:
+                m_op_queue[index] = 2;
+                break;
+            case R.id.button_op_division:
+                m_op_queue[index] = 4;
+                break;
+            case R.id.button_dot:
+            default:
+        }
+    }
+
+    private void intialNumberQueue() {
+        for (int i = 0; i < 2; i++) {
+            m_number_queue[i] = 0;
+        }
+    }
+
+    private void intialOperationQueue() {
+        for (int i = 0; i < 2; i++) {
+            m_op_queue[i] = 0;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         m_buttonNum = new Button[10];
+        m_buttonOp = new Button[5];
+        m_number_queue = new int[2];
+        m_op_queue = new int[2];
+        intialNumberQueue();
+        intialOperationQueue();
         getBtnNumById();
-        m_reslutView = (TextView)findViewById(R.id.caculator_text);
+        m_resultView = (TextView) findViewById(R.id.caculator_text);
         //m_buttonNum[1].setOnClickListener(this);
+        Log.d("Create", m_op_queue[0] + "," + m_op_queue[1] + "," + m_number_queue[0] + "," + m_number_queue[1]);
         setBtnNumClickListener();
+        setBtnOpClickListener();
     }
 
     @Override
     public void onClick(View v) {
         String num;
         Button tmp_btn;
-        int index = 0;
-        for(; index < 10; index++)
-        {
-            if(isNotNumberButton(v.getId()) == Boolean.FALSE) {
-                tmp_btn = (Button) findViewById(v.getId());
-                num = tmp_btn.getText().toString();
-                m_reslutView.setText(num);
+        String result;
+
+        if (isNotNumberButton(v.getId()) == Boolean.FALSE) {
+            tmp_btn = (Button) findViewById(v.getId());
+            num = tmp_btn.getText().toString();
+            Log.d("click Num", m_op_queue[0] + "," + m_op_queue[1] + "," + m_number_queue[0] + "," + m_number_queue[1]);
+            m_resultView.setText(num);
+        }
+        if (isNotNumberButton(v.getId()) == Boolean.TRUE) {
+            Log.d("141", m_op_queue[0] + "," + m_op_queue[1] + "," + m_number_queue[0] + "," + m_number_queue[1]);
+            if (getCountInOperationQueue() == 0) {
+                num = m_resultView.getText().toString();
+                m_number_queue[0] = Integer.parseInt(num);
+                addInOperationQueue(v.getId(), 0);
+                Log.d("click Op", m_op_queue[0] + "," + m_op_queue[1] + "," + m_number_queue[0] + "," + m_number_queue[1]);
+
+            } else if (getCountInOperationQueue() == 1) {
+                num = m_resultView.getText().toString();
+                m_number_queue[1] = Integer.parseInt(num);
+                addInOperationQueue(v.getId(), 1);
+                Log.d("click op2", m_op_queue[0] + "," + m_op_queue[1] + "," + m_number_queue[0] + "," + m_number_queue[1]);
+            }
+            if (getCountInOperationQueue() == 2) {
+                Log.d("click op3", m_op_queue[0] + "," + m_op_queue[1] + "," + m_number_queue[0] + "," + m_number_queue[1]);
+                if (isPlusOperation(m_op_queue[0])) {
+                    m_result = m_number_queue[0] + m_number_queue[1];
+
+                }
+                m_number_queue[1] = 0;
+                m_number_queue[0] = m_result;
+                m_op_queue[0] = m_op_queue[1];
+                m_op_queue[1] = 0;
+                result = Integer.toString(m_result);
+                m_resultView.setText(result);
             }
         }
+
     }
 }
