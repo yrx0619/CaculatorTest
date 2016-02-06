@@ -131,6 +131,7 @@
             />
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/linear_strut4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/linear_strut3"
@@ -164,5 +165,27 @@
             android:layout_weight="1"
             android:text="="
             />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear_strut4"
+        android:layout_alignLeft="@id/linear_strut4"
+        android:layout_alignRight="@id/linear_strut4">
+
+        <Button
+            android:id="@+id/button_clear"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:text="C" />
+
+        <Button
+            android:id="@+id/button_delete"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:text="Del" />
     </LinearLayout>
 </RelativeLayout>
